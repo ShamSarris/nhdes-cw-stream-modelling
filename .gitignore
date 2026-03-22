@@ -3,3 +3,6 @@
 
 ./src/data/Shapefiles/*
 bash.exe.stackdump
+
+./cache/*
+./src/cache/*
