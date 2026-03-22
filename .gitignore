@@ -1,2 +1,5 @@
 .venv/*
 .claude/*
+
+./src/data/Shapefiles/*
+bash.exe.stackdump
