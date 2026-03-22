@@ -26,7 +26,7 @@ Notes for our process:
 3) Since these are wadeable steams, do we need to consider deep holes for cold water fish? A detractor of IBIs. 
 
 **Drainage Area**
-Update this, using NHD data, I think?
+We attempted 2 methods of identifying the drainage/watershed area of each sampling site. The first method was to use the USGS NHD api with the known NHD COMID for each site. This provided the drainage area of each site easily and reliably. Note that the USGS NHD is no longer being maintained as of 2023. Since the data under review is previous to that time, this is a reliable API. The second method was to use shapefiles provided by the NHDES of the watershed area of each sampling site, and calculating the area of each watershed shape. The area from each method for each site was compared and the mean difference was 0.8 square miles. *What to choose?*
 
 **National Land Cover Database (NLCD)**
 In the original 2007 paper, 37 of the sampling sites were excluded due to "significant human disturbances based on objective criteria". In attempts to best match the original model, we are using the NLCD data from each year of sampling to determine if the areas of collection had much human activity. We will use CV to determine what % land development signifies "significant human disturbance" and if more or less % will affect the model. 
