@@ -3,10 +3,10 @@ import numpy as np
 from sklearn.metrics import confusion_matrix
 
 
-def plot_confusion_matrix(y_true, y_pred, labels=None, title="Confusion Matrix"):
-    cm = confusion_matrix(y_true, y_pred, labels=labels)
+def plot_confusion_matrix(cm, labels=None, title="Confusion Matrix"):
+
     if labels is None:
-        labels = sorted(set(y_true) | set(y_pred))
+        labels = list(range(cm.shape[0]))
 
     fig, ax = plt.subplots(figsize=(5, 4))
     im = ax.imshow(cm, interpolation="nearest", cmap="Blues")
@@ -28,4 +28,21 @@ def plot_confusion_matrix(y_true, y_pred, labels=None, title="Confusion Matrix")
 
     plt.tight_layout()
     plt.show()
-    return cm
+
+def calculate_classification_metrics(y_true, y_pred):
+    accuracy = np.mean(y_true == y_pred)
+    precision = np.sum((y_true == 1) & (y_pred == 1)) / np.sum(y_pred == 1) if np.sum(y_pred == 1) > 0 else 0
+    recall = np.sum((y_true == 1) & (y_pred == 1)) / np.sum(y_true == 1) if np.sum(y_true == 1) > 0 else 0
+    f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    return accuracy, precision, recall, f1_score
+
+def print_classification_report(y_true, y_pred):
+    accuracy, precision, recall, f1_score = calculate_classification_metrics(y_true, y_pred)
+    print(f"Accuracy: {accuracy:.2f}")
+    print(f"Precision: {precision:.2f}")
+    print(f"Recall: {recall:.2f}")
+    print(f"F1 Score: {f1_score:.2f}")
+
+def classification_report_suite(y_true, y_pred, labels=None, title="Confusion Matrix"):
+    print_classification_report(y_true, y_pred)
+    plot_confusion_matrix(confusion_matrix(y_true, y_pred), labels=labels, title=title)
