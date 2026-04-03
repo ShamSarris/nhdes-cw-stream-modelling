@@ -19,9 +19,9 @@ The intended audience is agency scientists and future collaborators who need to 
 
 ## Current Status
 - Maturity: model prototyping and development.
-- Canonical entry point: `src/main.ipynb`.
-- Current baseline: logistic regression.
-- Planned model expansion: ridge regression, lasso, random forest, and decision tree.
+- Canonical entry point: `src/modelling.ipynb`.
+- Current baseline: logistic regression (implemented, cross-validated).
+- Next planned model expansion: ensemble decision tree approaches.
 
 ## Research Questions
 1. Can the original 2007 cold-water stream classification framework be reproduced with current data preparation steps?
@@ -32,26 +32,27 @@ The intended audience is agency scientists and future collaborators who need to 
 ## Reproducibility Quickstart
 
 ### 1) Environment setup
-This repository currently does not include a locked dependency file. Start with the project virtual environment and install the core packages used by notebooks and utilities.
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install --upgrade pip
-pip install pandas numpy matplotlib requests geopandas pynhd jupyter
+pip install -r requirements.txt
 ```
 
-### 2) Launch and run the main workflow
+### 2) Data preparation
 ```powershell
-jupyter notebook src/main.ipynb
+jupyter notebook src/data_prep.ipynb
 ```
 
-Run cells in order from top to bottom.
+Run cells in order. This notebook handles raw data ingestion, site filtering, species presence collation, drainage area derivation, and NLCD impervious surface extraction.
 
-### 3) Secondary exploratory workflow
+### 3) Modelling and evaluation
 ```powershell
-jupyter notebook docs/initial_exploration.ipynb
+jupyter notebook src/modelling.ipynb
 ```
+
+Run cells in order. This notebook covers model creation, cross-validation, threshold sensitivity analysis, and evaluation metrics.
 
 ## Data Sources and Processing Logic
 
@@ -88,39 +89,36 @@ Preliminary comparison indicates mean difference near 0.8 square miles between m
 The 2007 study excluded sites with significant human disturbance. This project re-estimates disturbance thresholds using NLCD by sampling year and evaluates threshold sensitivity with cross validation.
 
 ## Model Development Plan
-- Baseline: logistic regression (aligned with prior study for comparability)
-- Candidate expansions:
-	- Ridge regression
-	- Lasso
-	- Random forest
-	- Decision tree
-- Evaluation approach (in progress): cross-validated comparison across model families and threshold definitions
+- Baseline: logistic regression (implemented, aligned with prior study for comparability)
+- Next candidate: ensemble decision tree approaches
+- Evaluation approach: cross-validated comparison across model families and threshold definitions
 
 ## Repository Map
 
 ```text
 nhdes-cw-stream-modeling/
 |-- README.md
+|-- requirements.txt
 |-- docs/
-|   |-- initial_exploration.ipynb
 |   |-- Initial_Mtg.md
 |   `-- static/
 `-- src/
-	|-- main.ipynb
-	|-- data/
-	|   |-- drain_to_waterbody.csv
-	|   |-- watersheds_with_area_based-on-shp.csv
-    |   |--20260316_Fish_Data.xlsx
-	|   |-- Shapefiles/
-	|   `-- NLCD tiffs/
-	`-- utils/
-		|-- compare_areas.py
-		|-- drainage.py
-		`-- geo_look.py
+    |-- data_prep.ipynb
+    |-- modelling.ipynb
+    |-- data/
+    |   |-- site_species_presence.csv
+    |   |-- watersheds_with_area_based-on-shp.csv
+    |   |-- 20260316_Fish_Data.xlsx
+    |   |-- Shapefiles/
+    |   `-- NLCD tiffs/
+    `-- utils/
+        |-- confusion.py
+        `-- drainage.py
 ```
 
 ## Where To Start
-- Primary workflow notebook: `src/main.ipynb`
-- Early exploration notebook: `docs/initial_exploration.ipynb`
+- Data preparation: `src/data_prep.ipynb`
+- Modelling and evaluation: `src/modelling.ipynb`
 - Drainage API and watershed logic: `src/utils/drainage.py`
+- Confusion matrix and classification metrics: `src/utils/confusion.py`
 
