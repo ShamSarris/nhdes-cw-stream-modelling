@@ -10,6 +10,10 @@ The features modelled on are lattitude, longitude, and watershed area (calculate
 
 Additionally, to filter for % development a feature was added *pct_dev* that is calculated by adding the pixels coded as 21, 22, 23, or 24 in a site's watershed area divided by the total pixels. 
 
+**Sites with Missing Watershed Data**
+
+I93-POC-03_9_24, I93-POC-08_9_24, I93-POL-10_9_24, I93-POL-04_10_3, I93-POLU01-01_9_24, 04-BRL_7_14, 00P-POL_9_24
+
 ## Model Results
 
 ### Logistic Regression
@@ -18,15 +22,14 @@ Additionally, to filter for % development a feature was added *pct_dev* that is 
 
 **Logistic Regression 3%**
 
-Observations kept (pct_dev <= 3%): 196 / 464
+Observations kept (pct_dev <= 3%): 234 / 570
+Train n=198, Test n=36
 
-Train n=156, Test n=40
-
-Accuracy: 0.80
-Precision: 0.96
-Recall: 0.79
-F1 Score: 0.87
-![alt text](./static/image.png)
+Accuracy: 0.83
+Precision: 1.00
+Recall: 0.82
+F1 Score: 0.90
+![alt text](image.png)
 
 **Logistic Regression 5%**
 
