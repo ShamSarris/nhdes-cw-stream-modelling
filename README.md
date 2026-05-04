@@ -4,7 +4,7 @@ Authors: Sam Harris, Alec Rydeen
 ---
 
 ![Project Stage](https://img.shields.io/badge/stage-prototyping-orange)
-![Primary Model](https://img.shields.io/badge/model-logistic%20regression-blue)
+![Models](https://img.shields.io/badge/models-logistic%20regression%20%7C%20xgboost-blue)
 ![Audience](https://img.shields.io/badge/audience-agency%20scientists%20%26%20collaborators-green)
 ![Domain](https://img.shields.io/badge/domain-cold%20water%20stream%20classification-2b7a78)
 
@@ -19,9 +19,9 @@ The intended audience is agency scientists and future collaborators who need to 
 
 ## Current Status
 - Maturity: model prototyping and development.
-- Canonical entry point: `src/modelling.ipynb`.
-- Current baseline: logistic regression (implemented, cross-validated).
-- Next planned model expansion: ensemble decision tree approaches.
+- Two model notebooks are active: `src/lr_main.ipynb` (logistic regression) and `src/xg_main.ipynb` (XGBoost).
+- Both models are implemented and cross-validated across five development-threshold datasets.
+- Final outputs of models with best threshold and train/test split are in `src/outputs`. This include logistic regression equations and the sites included in each train/test split. 
 
 ## Research Questions
 1. Can the original 2007 cold-water stream classification framework be reproduced with current data preparation steps?
@@ -45,14 +45,49 @@ pip install -r requirements.txt
 jupyter notebook src/data_prep.ipynb
 ```
 
-Run cells in order. This notebook handles raw data ingestion, site filtering, species presence collation, drainage area derivation, and NLCD impervious surface extraction.
+Run all cells in order. This notebook:
+- Reads raw electrofishing records from `data/20260316_Fish_Data.xlsx`
+- Derives watershed areas from NHDES shapefiles
+- Extracts % developed land cover per site from NLCD rasters
+- Builds `data/site_species_presence.csv` (577 sites × 51 species, binary presence/absence)
+- Builds `data/site_species_presence_combined.csv` (locations with multiple visits merged into one row)
+- Removes sites with no watershed area and produces diagnostic plots
 
-### 3) Modelling and evaluation
+Both output CSVs are required before running the model notebooks.
+
+### 3) Logistic regression model
 ```powershell
-jupyter notebook src/modelling.ipynb
+jupyter notebook src/lr_main.ipynb
 ```
 
-Run cells in order. This notebook covers model creation, cross-validation, threshold sensitivity analysis, and evaluation metrics.
+**Cells 1–2** load and filter the data by development threshold — run these first and leave them as-is.
+
+**Optional — cells 3–4** run a cross-validation sweep across train/test split ratios for each threshold. These are slow; skip them if you just want to train a model.
+
+**Last cell** trains a single logistic regression and saves a JSON report to `src/output/`. Adjust two flags at the top of that cell before running:
+
+| Flag | Description | Example values |
+|---|---|---|
+| `THRESHOLD` | Maximum % developed land cover to include (`pct_dev`) | `3`, `5`, `7`, `10`, `15` |
+| `TEST_SPLIT` | Fraction of observations held out for evaluation | `0.10`, `0.15`, `0.20`, `0.25`, `0.30` |
+
+Output is saved to `src/output/lr_pct{THRESHOLD}_split{TEST_SPLIT*100}.json`.
+
+### 4) XGBoost model
+```powershell
+jupyter notebook src/xg_main.ipynb
+```
+
+Identical workflow to `lr_main.ipynb`. **Cells 1–2** load and filter data. The **last cell** trains and evaluates an XGBoost classifier with the same two flags:
+
+| Flag | Description | Example values |
+|---|---|---|
+| `THRESHOLD` | Maximum % developed land cover to include | `3`, `5`, `7`, `10`, `15` |
+| `TEST_SPLIT` | Fraction held out for evaluation | `0.10`, `0.15`, `0.20`, `0.25`, `0.30` |
+
+Output is saved to `src/output/xgb_pct{THRESHOLD}_split{TEST_SPLIT*100}.json`.
+
+**Recommended starting point:** `THRESHOLD = 7`, `TEST_SPLIT = 0.20` — both models show strong AUC near these values without excessive class imbalance.
 
 ## Data Sources and Processing Logic
 
@@ -83,15 +118,8 @@ Two methods are being compared:
 
 Preliminary comparison indicates mean difference near 0.8 square miles between methods. Final selection criterion is still under evaluation.
 
-<img src="./docs/static/shp-area_vs_nhd-area.png">
-
 ### NLCD disturbance screening
 The 2007 study excluded sites with significant human disturbance. This project re-estimates disturbance thresholds using NLCD by sampling year and evaluates threshold sensitivity with cross validation.
-
-## Model Development Plan
-- Baseline: logistic regression (implemented, aligned with prior study for comparability)
-- Next candidate: ensemble decision tree approaches
-- Evaluation approach: cross-validated comparison across model families and threshold definitions
 
 ## Repository Map
 
@@ -103,14 +131,17 @@ nhdes-cw-stream-modeling/
 |   |-- Initial_Mtg.md
 |   `-- static/
 `-- src/
-    |-- data_prep.ipynb
-    |-- modelling.ipynb
+    |-- data_prep.ipynb          ← run first: builds all data CSVs
+    |-- lr_main.ipynb            ← logistic regression training and evaluation
+    |-- xg_main.ipynb            ← XGBoost training and evaluation
     |-- data/
-    |   |-- site_species_presence.csv
+    |   |-- site_species_presence.csv          (generated by data_prep)
+    |   |-- site_species_presence_combined.csv (generated by data_prep)
     |   |-- watersheds_with_area_based-on-shp.csv
     |   |-- 20260316_Fish_Data.xlsx
     |   |-- Shapefiles/
     |   `-- NLCD tiffs/
+    |-- output/                  ← JSON model reports written here
     `-- utils/
         |-- confusion.py
         `-- drainage.py
@@ -118,7 +149,9 @@ nhdes-cw-stream-modeling/
 
 ## Where To Start
 - Data preparation: `src/data_prep.ipynb`
-- Modelling and evaluation: `src/modelling.ipynb`
+- Logistic regression: `src/lr_main.ipynb`
+- XGBoost: `src/xg_main.ipynb`
 - Drainage API and watershed logic: `src/utils/drainage.py`
 - Confusion matrix and classification metrics: `src/utils/confusion.py`
+- **Model outputs (parameters + train/test sites) for final Log Reg and XGBoost models:** `src/output`
 
