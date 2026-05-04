@@ -8,8 +8,8 @@ Authors: Sam Harris, Alec Rydeen
 ![Audience](https://img.shields.io/badge/audience-agency%20scientists%20%26%20collaborators-green)
 ![Domain](https://img.shields.io/badge/domain-cold%20water%20stream%20classification-2b7a78)
 
-<img src="./docs/static/nhdes-logo.png" alt="NHDES Logo" width="210" />
-<img src="./docs/static/unh_logo-transparent.png" alt="UNH Logo" width="190" />
+<img src="./docs/static/nhdes-logo.png" alt="NHDES Logo" width="100" />
+<img src="./docs/static/unh_logo-transparent.png" alt="UNH Logo" width="90" />
 
 # NHDES Cold Water Wadeable Stream Modeling
 
