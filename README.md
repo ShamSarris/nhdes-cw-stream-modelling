@@ -46,12 +46,13 @@ pip install -r requirements.txt
 jupyter notebook src/data_prep.ipynb
 ```
 
-Run all cells in order. This notebook:
+You may run all cells in order, however each cell is a script that does seperate things and likely should be run as needed. This notebook:
 - Reads raw electrofishing records from `data/20260316_Fish_Data.xlsx`
 - Derives watershed areas from NHDES shapefiles
 - Extracts % developed land cover per site from NLCD rasters
 - Builds `data/site_species_presence.csv` (577 sites × 51 species, binary presence/absence)
 - Builds `data/site_species_presence_combined.csv` (locations with multiple visits merged into one row)
+  - **Don't use this if you plan to use manually handled duplicated**
 - Removes sites with no watershed area and produces diagnostic plots
 
 Both output CSVs are required before running the model notebooks.
